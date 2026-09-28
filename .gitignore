@@ -1,0 +1,5 @@
+.venv/
+.env
+pharma_db.json
+temp/
+__pycache__/
