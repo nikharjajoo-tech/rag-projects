@@ -1,8 +1,5 @@
-.venv/
+# Apply to every project in this repo
 .env
-pharma_db.json
-temp/
+.venv/
 __pycache__/
 .DS_Store
-# stray folder with a leading-space name, created by accident; not part of this project
-/\ /
