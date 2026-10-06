@@ -22,6 +22,8 @@ and rebuilt to run on the Gemini free tier.
 | 8 | Beyond text | Images, tables, knowledge graphs | When does plain text chunking stop working? | Planned |
 | 9 | Build vs. buy | Managed RAG platforms, guardrails, user feedback | Speed of shipping vs. control | Planned |
 
+What I aim to understand at each stage, the experiments and time estimates are in the [learning plan](LEARNING_PLAN.md).
+
 ## Repo layout
 
 Each folder is a self-contained project with its own README, `requirements.txt` and virtual environment.
