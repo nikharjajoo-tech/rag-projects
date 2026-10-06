@@ -1,48 +1,70 @@
-# PharmaQuery
+# Document Retrieval System (RAG Chain)
 
-## Overview
-PharmaQuery is an advanced Pharmaceutical Insight Retrieval System designed to help users gain meaningful insights from research papers and documents in the pharmaceutical domain.
+Ask questions about your own PDFs. The app finds the most relevant passages and has Gemini
+answer using only those passages. This is the basic **Retrieval-Augmented Generation (RAG)** pattern
+behind tools like NotebookLM and "chat with your files" features.
 
-## Demo
-https://github.com/user-attachments/assets/c12ee305-86fe-4f71-9219-57c7f438f291
+This is stage 1 of my [RAG learning series](../README.md).
 
-## Features
-- **Natural Language Querying**: Ask complex questions about the pharmaceutical industry and get concise, accurate answers.
-- **Custom Database**: Upload your own research documents to enhance the retrieval system's knowledge base.
-- **Similarity Search**: Retrieves the most relevant documents for your query using AI embeddings.
-- **Streamlit Interface**: User-friendly interface for queries and document uploads.
+## How it works
 
-## Technologies Used
-- **Programming Language**: [Python 3.10+](https://www.python.org/downloads/release/python-31011/)
-- **Framework**: [LangChain](https://www.langchain.com/)
-- **Database**: [ChromaDB](https://www.trychroma.com/)
-- **Models**:
-  - Embeddings: [Google Gemini API (embedding-001)](https://ai.google.dev/gemini-api/docs/embeddings)
-  - Chat: [Google Gemini API (gemini-1.5-pro)](https://ai.google.dev/gemini-api/docs/models/gemini#gemini-1.5-pro)
-- **PDF Processing**: [PyPDFLoader](https://python.langchain.com/docs/integrations/document_loaders/pypdfloader/)
-- **Document Splitter**: [SentenceTransformersTokenTextSplitter](https://python.langchain.com/api_reference/text_splitters/sentence_transformers/langchain_text_splitters.sentence_transformers.SentenceTransformersTokenTextSplitter.html)
+```
+PDF → extract text → split into chunks → embed each chunk (Gemini) → store vectors
+                                                                        │
+Question → embed question → find 5 most similar chunks ─────────────────┘
+         → put chunks + question into a prompt → Gemini writes the answer
+```
 
-## Requirements
-1. **Install Dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
+| Step | Setting in `app.py` | Tradeoff it controls |
+|---|---|---|
+| Chunking | `chunk_size=400`, `chunk_overlap=200` (characters) | Precise small chunks vs. context-rich large ones; more chunks = more embedding cost |
+| Retrieval | `k=5` | More chunks = better chance of including the answer, but more tokens and more noise |
+| Generation | `PROMPT_TEMPLATE`, `temperature=1` | How strictly the model sticks to the retrieved text |
 
-2. **Run the Application**:
-   ```bash
-   streamlit run app.py
-   ```
+## What I changed from the original tutorial (and why)
 
-3. **Use the Application**:
-   - Paste your Google API Key in the sidebar.
-   - Enter your query in the main interface.
-   - Optionally, upload research papers in the sidebar to enhance the database.
+Adapted from [`rag_tutorials/rag_chain`](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/rag_tutorials/rag_chain)
+in Shubham Saboo's [awesome-llm-apps](https://github.com/Shubhamsaboo/awesome-llm-apps)
+(original app by Charan).
 
-## :mailbox: Connect With Me
-<img align="right" src="https://media.giphy.com/media/2HtWpp60NQ9CU/giphy.gif" alt="handshake gif" width="150">
+- **Runs on an Intel Mac with Python 3.14.** There are no builds of `onnxruntime` or PyTorch for that combination, so
+  ChromaDB was replaced with LangChain's `InMemoryVectorStore` (saved to `pharma_db.json`), and the
+  SentenceTransformers splitter was replaced with `RecursiveCharacterTextSplitter`.
+- **Current models.** The retired `gemini-1.5-pro` / `embedding-001` were replaced with `gemini-3.8-flash` /
+  `gemini-embedding-001`.
+- **Bug fix.** The sidebar API key never reached the embedding model. The app now uses it, falling back to `.env`.
+- **Works on the free tier.** Gemini's free tier allows 100 embedding requests per minute, so a normal PDF
+  (about 200–300 chunks) used to crash the upload. Uploads now go in batches, wait out the limit with a
+  countdown, save progress after each batch, and stop cleanly when the daily limit is hit. I deliberately did *not*
+  increase chunk size to avoid the limit, because chunk size is a quality setting I want to experiment with.
+- **Generalised** from pharma-only to any document.
 
-<p align="left">
-  <a href="https://linkedin.com/in/codewithcharan" target="blank"><img align="center" src="https://raw.githubusercontent.com/rahuldkjain/github-profile-readme-generator/master/src/images/icons/Social/linked-in-alt.svg" alt="codewithcharan" height="30" width="40" style="margin-right: 10px" /></a>
-  <a href="https://instagram.com/joyboy._.ig" target="blank"><img align="center" src="https://raw.githubusercontent.com/rahuldkjain/github-profile-readme-generator/master/src/images/icons/Social/instagram.svg" alt="__mr.__.unique" height="30" width="40" /></a>
-  <a href="https://twitter.com/Joyboy_x_" target="blank"><img align="center" src="https://raw.githubusercontent.com/rahuldkjain/github-profile-readme-generator/master/src/images/icons/Social/twitter.svg" alt="codewithcharan" height="30" width="40" style="margin-right: 10px" /></a>
-</p>
+## Run it
+
+```bash
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt
+echo "GOOGLE_API_KEY=your-key-here" > .env     # free key: https://aistudio.google.com/apikey
+.venv/bin/streamlit run app.py
+```
+
+Upload a PDF in the sidebar → **Submit & Process** → ask a question.
+
+## Test document
+
+`test_docs/` contains two open-access arXiv papers. Start with
+`Role_of_AI_in_Drug_Discovery_2212.08104.pdf` (11 pages, about 187 chunks, about 2 minutes to upload on the free tier).
+Good questions to check against it:
+
+1. Who developed AlphaFold and what does it do?
+2. What does the successful use of AI in drug discovery depend on?
+3. How was this article written? (It was co-written with ChatGPT as an experiment.)
+4. What drug did Insilico Medicine take to clinical trials? (**Not in the paper.** A good app should say it
+   doesn't know. A confident answer here is a hallucination.)
+
+## Known limitations (fixed in later stages)
+
+- It doesn't show *which* chunks the answer came from, so you can't tell a retrieval miss from a hallucination.
+- It doesn't refuse when the document doesn't contain the answer.
+- Meaning-based search can miss exact terms (drug names, codes).
+- Tables, charts and scanned pages lose their content when the text is extracted.

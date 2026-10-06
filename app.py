@@ -1,4 +1,6 @@
 import os
+import re
+import time
 import streamlit as st
 
 from dotenv import load_dotenv
@@ -17,6 +19,10 @@ load_dotenv()
 CHAT_MODEL = "gemini-3.8-flash"
 EMBEDDING_MODEL = "models/gemini-embedding-001"
 DB_PATH = "./pharma_db.json"
+
+# Gemini free tier allows 100 embedding requests per minute (1 chunk = 1 request).
+# We send chunks in batches and wait whenever Google says we've hit the limit.
+EMBED_BATCH_SIZE = 50
 
 def get_api_key():
     """Returns the key entered in the sidebar, falling back to GOOGLE_API_KEY in .env."""
@@ -59,6 +65,7 @@ def add_to_db(uploaded_files):
         return
 
     db = get_db()
+    all_chunks = []
 
     for uploaded_file in uploaded_files:
         # Save the uploaded file to a temporary path
@@ -81,16 +88,38 @@ def add_to_db(uploaded_files):
             chunk_size=400,
             chunk_overlap=200
         )
-        chunks = text_splitter.create_documents(doc_content, doc_metadata)
-
-        # Add chunks to database
-        db.add_documents(chunks)
+        all_chunks.extend(text_splitter.create_documents(doc_content, doc_metadata))
 
         # Remove the temporary file after processing
         os.remove(temp_file_path)
 
-    # Save the database to disk so it survives app restarts
-    db.dump(DB_PATH)
+    # Embed and store chunks in batches, pausing when we hit the free-tier rate limit
+    progress = st.progress(0.0, text=f"Embedding {len(all_chunks)} chunks...")
+    status = st.empty()
+    done = 0
+    while done < len(all_chunks):
+        batch = all_chunks[done:done + EMBED_BATCH_SIZE]
+        try:
+            db.add_documents(batch)
+        except Exception as e:
+            if "RESOURCE_EXHAUSTED" not in str(e) and "429" not in str(e):
+                raise
+            if "PerDay" in str(e):
+                st.error(f"Daily free-tier embedding limit reached. Saved {done} of {len(all_chunks)} chunks; "
+                         "try again tomorrow or use a smaller PDF.")
+                return
+            # Google tells us how long to wait, e.g. "Please retry in 58.03s"
+            match = re.search(r"retry in ([\d.]+)s", str(e))
+            wait_seconds = int(float(match.group(1))) + 2 if match else 60
+            for remaining in range(wait_seconds, 0, -1):
+                status.info(f"Hit the free-tier limit (100 chunks/minute). Resuming in {remaining}s...")
+                time.sleep(1)
+            status.empty()
+            continue
+        done += len(batch)
+        # Save after every batch so progress survives an interruption
+        db.dump(DB_PATH)
+        progress.progress(done / len(all_chunks), text=f"Embedded {done} of {len(all_chunks)} chunks")
 
 def run_rag_chain(query):
     """Processes a query using a Retrieval-Augmented Generation (RAG) chain.
@@ -162,11 +191,11 @@ def main():
 
     Returns:
         None"""
-    st.set_page_config(page_title="PharmaQuery", page_icon=":microscope:")
-    st.header("Pharmaceutical Insight Retrieval System")
+    st.set_page_config(page_title="Document Retrieval", page_icon=":microscope:")
+    st.header("Document Retrieval System")
 
     query = st.text_area(
-        ":bulb: Enter your query about the Pharmaceutical Industry:",
+        ":bulb: Ask a question about your documents:",
         placeholder="e.g., What are the AI applications in drug discovery?"
     )
 
@@ -196,7 +225,7 @@ def main():
     
     with st.sidebar:
         st.markdown("---")
-        pdf_docs = st.file_uploader("Upload your research documents related to Pharmaceutical Sciences (Optional) :memo:",
+        pdf_docs = st.file_uploader("Upload your documents (PDF) :memo:",
                                     type=["pdf"],
                                     accept_multiple_files=True
         )
@@ -211,7 +240,7 @@ def main():
                     st.success(":file_folder: Documents successfully added to the database!")
 
     # Sidebar Footer
-    st.sidebar.write("Built with ❤️ by [Charan](https://www.linkedin.com/in/codewithcharan/)")
+    st.sidebar.write("Built with ❤️ by [Nikhar](https://www.linkedin.com/in/nikhar-jajoo/)")
              
 if __name__ == "__main__":
     main()

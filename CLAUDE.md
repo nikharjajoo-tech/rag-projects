@@ -20,6 +20,12 @@ This Mac is Intel (x86_64) with Python 3.14, which has no builds of `onnxruntime
   Set via `CHAT_MODEL` / `EMBEDDING_MODEL` constants at the top of `app.py`. Using Gemini free tier.
 - **Bug fix:** the sidebar API key never reached the embedding model. Now `get_api_key()` uses the
   sidebar key, falling back to `GOOGLE_API_KEY` in `.env`.
+- **Free-tier rate limit:** Gemini free tier allows 100 embedding requests/minute (1 chunk = 1
+  request), so normal PDFs failed with 429. Uploads now embed in batches of `EMBED_BATCH_SIZE`,
+  wait out the per-minute limit, save after each batch, and stop with a message on the daily limit.
+  Chunk size was deliberately NOT changed to work around this — it's an experiment variable.
+- **Rebranded:** UI says "Document Retrieval System"; footer credits Nikhar (linkedin.com/in/nikhar-jajoo).
+  The answer prompt still says "pharmaceutical sciences" (left as-is, not yet decided).
 
 ## How to run
 ```
@@ -28,12 +34,8 @@ This Mac is Intel (x86_64) with Python 3.14, which has no builds of `onnxruntime
 API key goes in `.env` as `GOOGLE_API_KEY=...` (gitignored — never commit it). Upload a PDF in the
 sidebar → "Submit & Process" → ask a question.
 
-## The pipeline (where to look in app.py)
-PDF → `PyPDFLoader` → split into chunks → embed with Gemini → store in vector DB →
-on a question, retrieve top `k=5` similar chunks → stuff into prompt → Gemini answers.
-
 ## Status / next steps
-- [x] Setup done, app launches (not yet tested end-to-end with a real API key)
+- [x] Setup done, app launches, API key verified (embeddings + chat both work)
 - [ ] First successful question on my own PDF
 - [ ] Show the retrieved chunks next to each answer (to see *why* an answer is right/wrong)
 - [ ] Experiments: vary `chunk_size`, `chunk_overlap`, `k`, `temperature` (currently 1 — high for a
