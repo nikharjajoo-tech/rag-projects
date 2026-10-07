@@ -16,7 +16,7 @@ from langchain_core.runnables import RunnablePassthrough
 
 load_dotenv()
 
-CHAT_MODEL = "gemini-3.8-flash"
+CHAT_MODEL = "gemini-3.5-flash-lite"
 EMBEDDING_MODEL = "models/gemini-embedding-001"
 DB_PATH = "./pharma_db.json"
 

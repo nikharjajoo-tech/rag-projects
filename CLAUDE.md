@@ -23,3 +23,5 @@ Stage 1 tuning experiments (chunk size, top-k, temperature) were skipped — I h
 Intel Mac (x86_64), Python 3.14 — no builds of `onnxruntime`, PyTorch, `chromadb`,
 `sentence-transformers`, `faiss`, `llama-cpp-python`. Pick pure-Python / API-based alternatives.
 Gemini free tier: 100 embedding requests/minute plus a daily cap — design uploads around it.
+Chat model `gemini-3.8-flash` free tier allows only 20 requests/day (found 2026-10-06; resets ~midnight
+Pacific) — so the series uses `gemini-3.5-flash-lite` instead. Check live usage at https://ai.dev/rate-limit.
