@@ -3,6 +3,8 @@
 A fixed test set, a grading rubric and a checked model grader, so every later stage can answer
 "did this change actually help?" with a number instead of a feeling.
 
+How the indexing, answering and evaluation flows fit together: see the diagram in [PIPELINE.md](PIPELINE.md).
+
 ## What's here
 
 | File | What it does |
@@ -14,6 +16,7 @@ A fixed test set, a grading rubric and a checked model grader, so every later st
 | `score.py` | Scores a graded run: overall, by question type, by failure pattern |
 | `add_pdf.py` | Adds a PDF to a database without duplicates, for any chunk setting |
 | `EXPERIMENTS.md` | Every run: prediction first, then result |
+| `LEARNINGS.md` | My PM takeaways from this stage |
 | `results/` | Run reports (`.md`), hand grades (`*_grades.csv`), model grades (`*_model_grades_*.csv`) |
 
 **Question types**, each aimed at a failure a later stage should fix:
@@ -52,4 +55,4 @@ Details, including the overlap experiment and what went wrong in it, are in `EXP
 
 ## What I learned (PM note)
 
-_To write._
+See [LEARNINGS.md](LEARNINGS.md).
