@@ -1,6 +1,6 @@
 .venv/
 .env
-pharma_db.json
+pharma_db*.json
 temp/
 __pycache__/
 .DS_Store

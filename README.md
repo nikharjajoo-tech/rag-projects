@@ -13,7 +13,7 @@ and rebuilt to run on the Gemini free tier.
 | # | Stage | What it adds | Product question it answers | Status |
 |---|---|---|---|---|
 | 1 | [**Basic RAG**](rag-chain/) | Retrieve relevant chunks, then answer from them | What's the simplest thing that works, and where does it fail? | ✅ Built |
-| 2 | Measure it | Test question set and a failure-pattern taxonomy | Did a change actually help? | Planned |
+| 2 | [**Measure it**](rag-eval/) | Test question set, grading rubric, checked model grader | Did a change actually help? | ✅ Built |
 | 3 | Citations and "I don't know" | Source quotes, confidence, refusal threshold | Wrong answers vs. unanswered questions: where's the line? | Planned |
 | 4 | Hybrid search and reranking | Keyword + meaning-based search, reranker | Is extra quality worth the extra latency? | Planned |
 | 5 | Routing | Send each question to the right knowledge base | How do you scale to many document sets? | Planned |

@@ -2,30 +2,31 @@
 
 Usage (from the rag-projects folder):
     rag-chain/.venv/bin/python rag-eval/add_pdf.py rag-chain/test_docs/<file>.pdf
+    rag-chain/.venv/bin/python rag-eval/add_pdf.py rag-chain/test_docs/<file>.pdf --overlap 80   # experiment database
 """
+import argparse
 import os
 import re
 import sys
 import time
 
-from dotenv import load_dotenv
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_core.vectorstores import InMemoryVectorStore
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-RAG_CHAIN_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "rag-chain")
-load_dotenv(os.path.join(RAG_CHAIN_DIR, ".env"))
+from run_eval import EMBEDDING_MODEL, CHUNK_SIZE, CHUNK_OVERLAP, db_path
 
-# Must match rag-chain/app.py so every chunk in the database is made the same way
-EMBEDDING_MODEL = "models/gemini-embedding-001"
-DB_PATH = os.path.join(RAG_CHAIN_DIR, "pharma_db.json")
-CHUNK_SIZE = 400
-CHUNK_OVERLAP = 200
 EMBED_BATCH_SIZE = 50
 
-pdf_path = sys.argv[1]
+parser = argparse.ArgumentParser()
+parser.add_argument("pdf_path")
+parser.add_argument("--chunk-size", type=int, default=CHUNK_SIZE)  # defaults match rag-chain/app.py
+parser.add_argument("--overlap", type=int, default=CHUNK_OVERLAP)
+args = parser.parse_args()
+pdf_path = args.pdf_path
 file_name = os.path.basename(pdf_path)
+DB_PATH = db_path(args.chunk_size, args.overlap)
 
 embedding_model = GoogleGenerativeAIEmbeddings(model=EMBEDDING_MODEL, google_api_key=os.getenv("GOOGLE_API_KEY"))
 db = InMemoryVectorStore.load(DB_PATH, embedding_model) if os.path.exists(DB_PATH) else InMemoryVectorStore(embedding_model)
@@ -37,9 +38,9 @@ if any(doc["metadata"].get("source", "").endswith(file_name) for doc in db.store
 pages = PyPDFLoader(pdf_path).load()
 for page in pages:
     page.metadata["source"] = f"./temp/{file_name}"  # same source format the app writes
-splitter = RecursiveCharacterTextSplitter(chunk_size=CHUNK_SIZE, chunk_overlap=CHUNK_OVERLAP)
+splitter = RecursiveCharacterTextSplitter(chunk_size=args.chunk_size, chunk_overlap=args.overlap)
 chunks = splitter.split_documents(pages)
-print(f"{file_name}: {len(pages)} pages -> {len(chunks)} chunks")
+print(f"{file_name}: {len(pages)} pages -> {len(chunks)} chunks ({args.chunk_size} / {args.overlap}) -> {os.path.basename(DB_PATH)}")
 
 # Embed in batches, waiting out the free-tier per-minute limit (100 chunks/minute)
 done = 0

@@ -1,7 +1,8 @@
 """Scores a graded run: overall, by question type, and by failure pattern.
 
 Usage (from the rag-projects folder):
-    python3 rag-eval/score.py baseline
+    python3 rag-eval/score.py baseline                                        # hand grades
+    python3 rag-eval/score.py baseline_model_grades_gemini-3.5-flash-lite     # model grades
 """
 import csv
 import os
@@ -11,7 +12,10 @@ from collections import Counter, defaultdict
 POINTS = {"yes": 1, "partly": 0.5, "no": 0}  # "partly" counts as half a correct answer
 
 run_name = sys.argv[1] if len(sys.argv) > 1 else "baseline"
-path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "results", f"{run_name}_grades.csv")
+results_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "results")
+path = os.path.join(results_dir, f"{run_name}.csv")
+if not os.path.exists(path):
+    path = os.path.join(results_dir, f"{run_name}_grades.csv")
 rows = list(csv.DictReader(open(path)))
 
 

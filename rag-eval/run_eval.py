@@ -2,11 +2,14 @@
 
 Usage (from the rag-projects folder):
     rag-chain/.venv/bin/python rag-eval/run_eval.py baseline
+    rag-chain/.venv/bin/python rag-eval/run_eval.py overlap80 --overlap 80
+    rag-chain/.venv/bin/python rag-eval/run_eval.py dedupe --dedupe
 
 Writes two files to rag-eval/results/:
     <run_name>.md          every answer next to the chunks it was based on, for reading
     <run_name>_grades.csv  one row per question, with blank columns for you to grade
 """
+import argparse
 import csv
 import os
 import re
@@ -26,7 +29,8 @@ load_dotenv(os.path.join(RAG_CHAIN_DIR, ".env"))
 # The settings under test. Keep these identical to rag-chain/app.py for the baseline run.
 CHAT_MODEL = "gemini-3.5-flash-lite"
 EMBEDDING_MODEL = "models/gemini-embedding-001"
-DB_PATH = os.path.join(RAG_CHAIN_DIR, "pharma_db.json")  # built with chunk_size=400, chunk_overlap=200
+CHUNK_SIZE = 400
+CHUNK_OVERLAP = 80  # app default since 2026-10-07 (was 200)
 TOP_K = 5
 TEMPERATURE = 1  # Google recommends the default 1.0 for Gemini 3 models
 
@@ -50,6 +54,30 @@ DOCS = {
     "Chen": "AI_Drug_Development_Real_World_Data_2101.08904.pdf",
     "Blanco": "Role_of_AI_in_Drug_Discovery_2212.08104.pdf",
 }
+
+
+def db_path(chunk_size, overlap):
+    """Each chunk setting gets its own database file; the app's own settings use pharma_db.json."""
+    name = "pharma_db.json" if (chunk_size, overlap) == (CHUNK_SIZE, CHUNK_OVERLAP) else f"pharma_db_{chunk_size}_{overlap}.json"
+    return os.path.join(RAG_CHAIN_DIR, name)
+
+
+def is_near_copy(text, others):
+    """True if text shares a 120-character stretch with any of the other chunks (overlapping neighbours)."""
+    return any(text[i:i + 120] in other for other in others for i in range(0, max(1, len(text) - 120), 20))
+
+
+def search(db, question, top_k, dedupe):
+    """Similarity search. With dedupe, fetch extra chunks and skip near-copies of ones already kept."""
+    if not dedupe:
+        return db.similarity_search_with_score(question, k=top_k)
+    kept = []
+    for doc, score in db.similarity_search_with_score(question, k=top_k + 3):
+        if not is_near_copy(doc.page_content, [d.page_content for d, _ in kept]):
+            kept.append((doc, score))
+        if len(kept) == top_k:
+            break
+    return kept
 
 
 def expected_pages(row):
@@ -76,20 +104,20 @@ waited_seconds = 0  # time spent waiting on rate limits, excluded from latency
 
 
 def with_retry(call):
-    """Runs an API call, waiting and retrying when we hit the free-tier per-minute limit
-    or Google's servers are temporarily overloaded (503)."""
+    """Runs an API call, waiting and retrying when we hit the free-tier per-minute limit,
+    Google's servers are temporarily overloaded (503), or the connection drops."""
     global waited_seconds
     overloaded_attempts = 0
     while True:
         try:
             return call()
         except Exception as e:
-            if "503" in str(e) or "UNAVAILABLE" in str(e):
+            if "503" in str(e) or "UNAVAILABLE" in str(e) or "Connection reset" in str(e):
                 overloaded_attempts += 1
                 if overloaded_attempts > 6:
                     raise
                 wait_seconds = 15 * overloaded_attempts
-                print(f"  model overloaded (503); waiting {wait_seconds}s...")
+                print(f"  temporary error ({str(e)[:40]}); waiting {wait_seconds}s...")
                 time.sleep(wait_seconds)
                 waited_seconds += wait_seconds
                 continue
@@ -105,9 +133,17 @@ def with_retry(call):
 
 
 def main():
-    run_name = sys.argv[1] if len(sys.argv) > 1 else "baseline"
+    parser = argparse.ArgumentParser()
+    parser.add_argument("run_name")
+    parser.add_argument("--chunk-size", type=int, default=CHUNK_SIZE)
+    parser.add_argument("--overlap", type=int, default=CHUNK_OVERLAP)
+    parser.add_argument("--top-k", type=int, default=TOP_K)
+    parser.add_argument("--dedupe", action="store_true", help="drop near-copy chunks from the search results")
+    args = parser.parse_args()
+    run_name = args.run_name
     api_key = os.getenv("GOOGLE_API_KEY")
-    db = InMemoryVectorStore.load(DB_PATH, GoogleGenerativeAIEmbeddings(model=EMBEDDING_MODEL, google_api_key=api_key))
+    db = InMemoryVectorStore.load(db_path(args.chunk_size, args.overlap),
+                                  GoogleGenerativeAIEmbeddings(model=EMBEDDING_MODEL, google_api_key=api_key))
     chain = (ChatPromptTemplate.from_template(PROMPT_TEMPLATE)
              | ChatGoogleGenerativeAI(model=CHAT_MODEL, api_key=api_key, temperature=TEMPERATURE)
              | StrOutputParser())
@@ -117,14 +153,15 @@ def main():
 
     os.makedirs(os.path.join(EVAL_DIR, "results"), exist_ok=True)
     report = [f"# Run: {run_name}\n",
-              f"Settings: model `{CHAT_MODEL}`, chunk size 400 / overlap 200, top-k {TOP_K}, temperature {TEMPERATURE}\n"]
+              f"Settings: model `{CHAT_MODEL}`, chunk size {args.chunk_size} / overlap {args.overlap}, "
+              f"top-k {args.top_k}{' with near-copies removed' if args.dedupe else ''}, temperature {TEMPERATURE}\n"]
     grades = []
 
     for row in questions:
         print(f"{row['id']}: {row['question'][:70]}")
         start, waited_before = time.time(), waited_seconds
         # Search: the same similarity search the app uses, plus the score of each chunk
-        results = with_retry(lambda: db.similarity_search_with_score(row["question"], k=TOP_K))
+        results = with_retry(lambda: search(db, row["question"], args.top_k, args.dedupe))
         search_seconds = time.time() - start - (waited_seconds - waited_before)
         context = "\n\n".join(doc.page_content for doc, _ in results)
         answer = with_retry(lambda: chain.invoke({"context": context, "question": row["question"]}))

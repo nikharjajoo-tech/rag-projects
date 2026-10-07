@@ -86,7 +86,7 @@ def add_to_db(uploaded_files):
         # Split documents into smaller chunks (sizes are in characters; ~4 characters = 1 token)
         text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=400,
-            chunk_overlap=200
+            chunk_overlap=80  # was 200; same quality, 37% fewer chunks (see rag-eval/EXPERIMENTS.md)
         )
         all_chunks.extend(text_splitter.create_documents(doc_content, doc_metadata))
 

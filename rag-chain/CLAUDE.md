@@ -11,7 +11,10 @@ This Mac is Intel (x86_64) with Python 3.14, which has no builds of `onnxruntime
 - **Vector DB:** Chroma → LangChain `InMemoryVectorStore`, saved to `pharma_db.json`.
   Do not reintroduce `chromadb`, `sentence-transformers`, `torch`, or `faiss` — they won't install here.
 - **Chunking:** SentenceTransformers token splitter → `RecursiveCharacterTextSplitter`
-  (`chunk_size=400`, `chunk_overlap=200` characters ≈ the original 100/50 tokens).
+  (`chunk_size=400` characters). Overlap was 200 (≈ the original 100/50 tokens) until 2026-10-07; now
+  80 — same quality on the stage-2 test set with 37% fewer chunks. Because the PDF text splits into
+  ~91-character lines, 80 means almost no real overlap. The old database is kept as
+  `pharma_db_400_200.json` to reproduce the stage-2 baseline (`run_eval.py ... --overlap 200`).
 - **Models:** `gemini-1.5-pro` / `embedding-001` (retired) → `gemini-3.5-flash-lite` / `models/gemini-embedding-001`.
   Was `gemini-3.8-flash` until 2026-10-06; switched because its free tier allows only 20 requests/day.
   Set via `CHAT_MODEL` / `EMBEDDING_MODEL` constants at the top of `app.py`. Using Gemini free tier.
