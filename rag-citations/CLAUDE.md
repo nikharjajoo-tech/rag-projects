@@ -27,7 +27,7 @@ and `EXPERIMENTS.md` before building anything.)
   ~~default database~~ decided 2026-10-12: `pharma_db_sentences.json` is `run_cited.py`'s default (the Stage 1
   app keeps its own database). **Reference point for Stage 4:** run `sentences` (80% correct, "high" right 100%,
   3 unnecessary refusals: Q03, Q09, Q16) and `nearmiss_sentences` (94%, 0 invented answers).
-  Explain back done 2026-10-12 (`LEARNINGS.md`); Stage 3 marked built in the root README. Remaining: commit + push.
+  Explain back done 2026-10-12 (`LEARNINGS.md`); Stage 3 marked built in the root README. **Stage 3 complete** (committed and pushed 2026-10-12).
 - Experiment 3 done 2026-10-08: cleaned index (`build_index.py`; databases `../rag-chain/pharma_db_norefs.json`,
   `pharma_db_sentences.json`). Junk chunks 24 → 2 of 100, Q12 fixed for the right reason, score unchanged
   (80%). To decide: make `sentences` the default database for later stages (recommended).
