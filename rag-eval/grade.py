@@ -3,6 +3,7 @@
 Usage (from the rag-projects folder):
     rag-chain/.venv/bin/python rag-eval/grade.py baseline gemini-3.5-flash-lite
     rag-chain/.venv/bin/python rag-eval/grade.py baseline gemini-3.5-flash-lite repeat2   # grade again, separately
+    rag-chain/.venv/bin/python rag-eval/grade.py rag-citations/results/cited gemini-3.5-flash-lite  # a run saved elsewhere
 
 Reads   results/<run>.md                       (written by run_eval.py)
 Writes  results/<run>_model_grades_<model>.csv (same columns as the hand-grading sheet)
@@ -95,9 +96,10 @@ def compare(hand_path, model_path):
 
 
 def main():
-    run_name, grader_model = sys.argv[1], sys.argv[2]
+    folder, run_name = os.path.split(sys.argv[1])  # a bare name means a run in rag-eval/results/
+    grader_model = sys.argv[2]
     label = f"_{sys.argv[3]}" if len(sys.argv) > 3 else ""  # lets the same run be graded again into a new file
-    results_dir = os.path.join(EVAL_DIR, "results")
+    results_dir = os.path.abspath(folder) if folder else os.path.join(EVAL_DIR, "results")
     out_path = os.path.join(results_dir, f"{run_name}_model_grades_{grader_model}{label}.csv")
     # The rubric cites test questions as examples, e.g. "(Q05)"; strip them so the grader isn't taught the answers
     rubric = re.sub(r" ?\((?:see )?Q\d{2}[^)]*\)", "", open(os.path.join(EVAL_DIR, "RUBRIC.md")).read())
@@ -123,8 +125,8 @@ def main():
 
     print(f"Saved {os.path.relpath(out_path, EVAL_DIR)}")
     hand_path = os.path.join(results_dir, f"{run_name}_grades.csv")
-    if os.path.exists(hand_path):
-        compare(hand_path, out_path)
+    if os.path.exists(hand_path) and any(r["correct (yes/partly/no)"] for r in csv.DictReader(open(hand_path))):
+        compare(hand_path, out_path)  # only once there are hand grades to compare with
 
 
 if __name__ == "__main__":

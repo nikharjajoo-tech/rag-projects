@@ -9,7 +9,28 @@ and `EXPERIMENTS.md` before building anything.)
   unnecessary refusal), three places to decide "I don't know" (search threshold, prompt, verification
   check), citations and citation accuracy.
 - Step 2 (predict) **done**: my predictions are below.
-- **Next: step 3 (build).** Nothing built yet in this folder.
+- Step 3 (build) **started**: plan items 1–3 built (`run_cited.py`, `score_cited.py`), smoke-tested on
+  4 questions (see `EXPERIMENTS.md`). Uses `../rag-chain/.venv` and `.env`, like Stage 2. `rag-eval/grade.py`
+  and `score.py` now accept a run path (e.g. `rag-citations/results/cited`) as well as a bare run name.
+- Rubric decided: a citation counts as saying which paper says what (added to `../rag-eval/RUBRIC.md`).
+  The grader must see `[2 Blanco p5]`, not bare `[2]`, or it ignores that rule.
+- Full run `cited` done (85% correct, 96% citation accuracy; see `EXPERIMENTS.md`).
+- Kept 2 documents on purpose: the question count, not the document count, limits the evidence.
+  Scale to more documents in Stage 5; state the limit in the write-up.
+- **Next:** (a) ~~confidence rule~~ done 2026-10-08: rule C written by me (any claim not fully supported = low,
+  admits something missing = medium, else high); "high" right 100% on `sentences`, Q14 can't be caught by any rule; (b) ~~break the verifier~~ done 2026-10-08 (Experiment 2): verifier v2
+  now shows each claim only its cited chunk; passes 1 of 45 wrong citations, accepts all 31 valid ones;
+  still mixes up claims in long batches (Q14); (c) ~~near-miss questions~~ done 2026-10-08
+  (Experiment 4: 0 invented answers; whole-sentence chunks 94% vs 81%); (d) ~~policy for unbacked claims~~ done 2026-10-12 (Experiment 5): my decision: show them flagged,
+  researcher accepts / edits / rejects (refusing was never better than dropping; dropping lost Q12);
+  (e) ~~refusal wording~~ done: "I couldn't find this in the documents".
+  ~~default database~~ decided 2026-10-12: `pharma_db_sentences.json` is `run_cited.py`'s default (the Stage 1
+  app keeps its own database). **Reference point for Stage 4:** run `sentences` (80% correct, "high" right 100%,
+  3 unnecessary refusals: Q03, Q09, Q16) and `nearmiss_sentences` (94%, 0 invented answers).
+  Explain back done 2026-10-12 (`LEARNINGS.md`); Stage 3 marked built in the root README. Remaining: commit + push.
+- Experiment 3 done 2026-10-08: cleaned index (`build_index.py`; databases `../rag-chain/pharma_db_norefs.json`,
+  `pharma_db_sentences.json`). Junk chunks 24 → 2 of 100, Q12 fixed for the right reason, score unchanged
+  (80%). To decide: make `sentences` the default database for later stages (recommended).
 
 ## Findings carried over from Stage 2
 - Reference point to beat: `rag-eval` run `overlap80` (400 / 80, top-k 5, flash-lite, temp 1):

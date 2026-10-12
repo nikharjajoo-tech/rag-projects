@@ -19,7 +19,8 @@ rule change here should be followed by regrading. Agreed during the stage-1 base
 - **A refusal on an answerable question is always no**, even when it's faithful because the chunks lacked
   the answer (Q03, Q15). Correct measures what the user got; faithful measures the model's honesty.
 - Extra information beyond the expected answer is fine if it's faithful.
-- Questions about both papers must say **which paper says what**; otherwise at most *partly*.
+- Questions about both papers must say **which paper says what**; otherwise at most *partly*. A citation
+  counts as saying it: a claim tagged with a chunk number is attributed to that chunk's paper (added in Stage 3).
 - Unanswerable questions: "not in the documents" = yes. Any invented figure = no.
 
 ## Faithful — answer vs. retrieved chunks (ignore the expected answer)

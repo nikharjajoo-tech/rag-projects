@@ -3,6 +3,7 @@
 Usage (from the rag-projects folder):
     python3 rag-eval/score.py baseline                                        # hand grades
     python3 rag-eval/score.py baseline_model_grades_gemini-3.5-flash-lite     # model grades
+    python3 rag-eval/score.py rag-citations/results/cited_model_grades_gemini-3.5-flash-lite  # a run saved elsewhere
 """
 import csv
 import os
@@ -11,8 +12,8 @@ from collections import Counter, defaultdict
 
 POINTS = {"yes": 1, "partly": 0.5, "no": 0}  # "partly" counts as half a correct answer
 
-run_name = sys.argv[1] if len(sys.argv) > 1 else "baseline"
-results_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "results")
+folder, run_name = os.path.split(sys.argv[1] if len(sys.argv) > 1 else "baseline")  # a bare name means rag-eval/results/
+results_dir = os.path.abspath(folder) if folder else os.path.join(os.path.dirname(os.path.abspath(__file__)), "results")
 path = os.path.join(results_dir, f"{run_name}.csv")
 if not os.path.exists(path):
     path = os.path.join(results_dir, f"{run_name}_grades.csv")
