@@ -61,7 +61,7 @@ def parse_run(markdown):
     questions = []
     for block in markdown.split("\n---\n\n## ")[1:]:
         field = lambda name: re.search(rf"\*\*{name}:\*\* (.*?)\n\n?(?=\*\*|\n\*\*|$)", block, re.S)
-        chunks = re.findall(r"\n\d+\. \*(\w+ p\d+), similarity [\d.]+\*.*?\n   > (.*)", block)
+        chunks = re.findall(r"\n\d+\. \*(\w+ p\d+), (?:similarity|bm25|rrf|relevance) [\d.]+\*.*?\n   > (.*)", block)  # score names: Stage 4
         notes = field("Notes")
         questions.append({
             "id": block.split()[0],

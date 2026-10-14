@@ -158,17 +158,25 @@ def render(answer, results, for_user, rows=None):
     return f"{text} Not found in the documents: {missing}" if missing else text
 
 
-def main():
+def main(make_search=None, results_dir=os.path.join(CITATIONS_DIR, "results"), extra_args=None):
+    """Stage 4 (rag-hybrid/run_hybrid.py) reuses this with its own search: make_search(args) returns
+    (search, settings note, score name), where search(question) gives ([(chunk, score)], timings)."""
     parser = argparse.ArgumentParser()
     parser.add_argument("run_name")
     parser.add_argument("--only", help="comma-separated question ids, e.g. Q01,Q17, for a quick test")
     parser.add_argument("--test-set", help="questions file (default: rag-eval/test_set.csv), e.g. rag-citations/test_set_nearmiss.csv")
     parser.add_argument("--db", default=DEFAULT_DB, help=f"database file in rag-chain/ (default: {DEFAULT_DB}); see build_index.py")
+    if extra_args:
+        extra_args(parser)
     args = parser.parse_args()
     api_key = os.getenv("GOOGLE_API_KEY")
-    db_file = os.path.join(run_eval.RAG_CHAIN_DIR, args.db)
-    db = InMemoryVectorStore.load(db_file,
-                                  GoogleGenerativeAIEmbeddings(model=EMBEDDING_MODEL, google_api_key=api_key))
+    if make_search:
+        search, search_note, score_name = make_search(args)
+    else:
+        db = InMemoryVectorStore.load(os.path.join(run_eval.RAG_CHAIN_DIR, args.db),
+                                      GoogleGenerativeAIEmbeddings(model=EMBEDDING_MODEL, google_api_key=api_key))
+        search = lambda question: (with_retry(lambda: db.similarity_search_with_score(question, k=TOP_K)), {})
+        search_note, score_name = f"database `{args.db}`", "similarity"
     answerer = ChatGoogleGenerativeAI(model=CHAT_MODEL, api_key=api_key, temperature=TEMPERATURE).with_structured_output(CitedAnswer)
     verifier = ChatGoogleGenerativeAI(model=VERIFIER_MODEL, api_key=api_key, temperature=0).with_structured_output(Verification)
 
@@ -177,18 +185,19 @@ def main():
     if args.only:
         questions = [q for q in questions if q["id"] in args.only.split(",")]
 
-    results_dir = os.path.join(CITATIONS_DIR, "results")
     os.makedirs(results_dir, exist_ok=True)
     report = [f"# Run: {args.run_name}\n",
               f"Settings: model `{CHAT_MODEL}`, chunk size {CHUNK_SIZE} / overlap {CHUNK_OVERLAP}, top-k {TOP_K}, "
               f"temperature {TEMPERATURE}; cited answers checked by `{VERIFIER_MODEL}` (temperature 0); "
-              f"database `{os.path.basename(db_file)}`\n"]
+              f"{search_note}\n"]
     grades, claims = [], []
 
     for row in questions:
         print(f"{row['id']}: {row['question'][:70]}")
         start, waited_before = time.time(), run_eval.waited_seconds
-        results = with_retry(lambda: db.similarity_search_with_score(row["question"], k=TOP_K))
+        results, timings = search(row["question"])
+        if timings:  # Stage 4 times its search steps itself; here, time the answer alone
+            start, waited_before = time.time(), run_eval.waited_seconds
         sources_text = "\n\n".join(f"[{i}] ({label(doc)}) {' '.join(doc.page_content.split())}"
                                    for i, (doc, _) in enumerate(results, 1))
         answer = with_retry(lambda: answerer.invoke(ANSWER_PROMPT.format(sources=sources_text, question=row["question"])))
@@ -210,7 +219,8 @@ def main():
         report.append(f"**Question:** {row['question']}\n")
         report.append(f"**Expected:** {row['correct_answer']}\n")
         report.append(f"**App answered:** {render(answer, results, for_user=False)}\n")
-        report.append(f"**Search:** {retrieval} found · {answer_seconds:.1f}s to answer + {verify_seconds:.1f}s to verify\n")
+        search_time = "".join(f"{timings[k]:.1f}s to {k.removesuffix('_seconds')} + " for k in ("search_seconds", "rerank_seconds") if k in timings)
+        report.append(f"**Search:** {retrieval} found · {search_time}{answer_seconds:.1f}s to answer + {verify_seconds:.1f}s to verify\n")
         if row["notes"]:
             report.append(f"**Notes:** {row['notes']}\n")
         report.append(f"**User sees:** {render(answer, results, for_user=True, rows=rows)}\n")
@@ -222,13 +232,14 @@ def main():
         for rank, (doc, score) in enumerate(results, 1):
             source = os.path.basename(doc.metadata["source"])
             marker = " ✅ expected page" if (source, doc.metadata["page"] + 1) in wanted else ""
-            report.append(f"\n{rank}. *{label(doc)}, similarity {score:.3f}*{marker}\n   > {' '.join(doc.page_content.split())}\n")
+            report.append(f"\n{rank}. *{label(doc)}, {score_name} {score:.3f}*{marker}\n   > {' '.join(doc.page_content.split())}\n")
 
         grades.append({"id": row["id"], "question_type": row["question_type"], "question": row["question"],
                        "expected": row["correct_answer"], "answer": render(answer, results, for_user=False),
                        "retrieval": retrieval, "refused": "yes" if not answer.sentences else "no",
                        "claims": len(rows), "supported": verdicts.count("supported"), "partly": verdicts.count("partly"),
                        "top_similarity": f"{results[0][1]:.3f}",
+                       **{k: f"{v:.2f}" for k, v in timings.items()},
                        "answer_seconds": f"{answer_seconds:.1f}", "verify_seconds": f"{verify_seconds:.1f}",
                        "correct (yes/partly/no)": "", "faithful (yes/no)": "", "failure_pattern": "", "my_notes": ""})
         claims += [{"id": row["id"], "question_type": row["question_type"], "claim": r["claim"], "text": r["text"],
@@ -243,7 +254,7 @@ def main():
                 writer = csv.DictWriter(f, fieldnames=list(table[0].keys()))
                 writer.writeheader()
                 writer.writerows(table)
-    print(f"\nSaved results/{args.run_name}.md, _grades.csv and _claims.csv in rag-citations/")
+    print(f"\nSaved {os.path.relpath(os.path.join(results_dir, args.run_name))}.md, _grades.csv and _claims.csv")
 
 
 if __name__ == "__main__":

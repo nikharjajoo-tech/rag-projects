@@ -1,0 +1,2 @@
+id,question_type,claim,text,cited,verifier,verifier_reason,hand (supported/partly/not supported),my_notes
+Q01,simple fact,1,"In the first round of literature search, 16 review articles met the inclusion criteria.",[1] Chen p4; [2] Chen p4,supported,"The cited source explicitly states that in the first round of literature search, 16 review articles met the inclusion criteria.",,

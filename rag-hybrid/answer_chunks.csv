@@ -1,0 +1,33 @@
+id,piece,phrase
+Q01,16 of 23 met the criteria,16 met our inclusion criteria
+Q02,just 6% correct,was just 6%
+Q03,no studies for preclinical,there were no studies identified for this stage
+Q04,searched until July 1 2020,published until July 1, 2020
+Q05,41 of 55 (74.5%),41 (74.5%) of them were NLP-related
+Q06,trained in 2021,has been trained in 2021
+Q07,target trial framework,“target trial”
+Q08,over 80% free text,over 80% of the clinical information in EHR
+Q09,OHDSI expanded,Observational Health Data Sciences and Informatics (OHDSI)
+Q10,BEHRT described,"BEHRT, a new deep neural sequence transduction model"
+Q11,Xu et al. assessed metformin,assessed whether metformin is a potential drug
+Q11,finding: decreased mortality,associated with decreased mortality after cancer diagnosis
+Q12,BACE1 and Alzheimer's,"(BACE1), a protein involved in the development of Alzheimer's"
+Q13,Chen: XAI interprets decisions,the emerging of explainable AI (XAI) could help to interpret
+Q13,Chen: XAI for drug repurposing,XAI models are particular useful for tasks such as drug repurposing
+Q13,Blanco: XAI explanations,"Another approach is the use of explainable AI (XAI) methods"
+Q14,Chen: data quality,one major challenge is the quality of the data
+Q14,Chen: sharing data is hard,sharing of individual-level clinical data remains difficult
+Q14,Blanco: low quality or inconsistent data,quality or inconsistent
+Q14,Blanco: biased training data,biased or unrepresentative
+Q15,55 on adverse events,Among the 55 studies on AE detection
+Q15,2 on drug repurposing,for the two articles on clinical drug repurposing
+Q16,Chen: external validation,External validations using independent sources
+Q16,Chen: loop back to clinical studies,will need to be looped back to the preclinical and clinical study stages
+Q16,Blanco: humans validate,must be validated and interpreted by human researchers
+Q16,Blanco: check reliable sources,to validate it using reliable sources
+N01,Zhang et al. statin study,"Zhang et al. first used NLP to identify patients who had AE related to statin therapy"
+N03,T-LSTM adds elapsed time,incorporate elapsed time information into the standard LSTM
+N05,Blanco: bias and unequal access,could result in unequal access to medical treatment
+N05,Blanco: job loss,raises concerns about job loss due to automation
+N05,Blanco: privacy and security,raises questions about data privacy and security
+N07,Spasic et al. NLP system,Spasic et al. used an NLP system that combined rule-based knowledge infusion

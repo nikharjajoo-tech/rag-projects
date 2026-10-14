@@ -1,0 +1,2 @@
+id,question_type,question,expected,answer,retrieval,refused,claims,supported,partly,top_similarity,search_seconds,rerank_seconds,answer_seconds,verify_seconds,correct (yes/partly/no),faithful (yes/no),failure_pattern,my_notes
+Q01,simple fact,How many review articles met the inclusion criteria in the first search round?,16 (out of 23 review articles identified),"In the first round of literature search, 16 review articles met the inclusion criteria. [1 Chen p4][2 Chen p4]",1 of 1 expected pages,no,1,1,0,0.939,0.83,0.57,2.0,1.3,,,,

@@ -3,6 +3,7 @@
 Usage (from the rag-projects folder), after grading the run with rag-eval/grade.py:
     python3 rag-citations/score_cited.py cited
     python3 rag-citations/score_cited.py cited gemini-3.5-flash-lite    # which model's grades to use for "correct"
+    python3 rag-citations/score_cited.py rag-hybrid/results/hybrid      # a run in another folder (Stage 4)
 
 Reads results/<run>_grades.csv and results/<run>_claims.csv (from run_cited.py), and
 results/<run>_model_grades_<model>.csv (from grade.py) if it exists. Makes no API calls, so changing the
@@ -35,9 +36,9 @@ def confidence(refused, verdicts, says_missing):
 
 
 def main():
-    run_name = sys.argv[1]
+    folder, run_name = os.path.split(sys.argv[1])  # a bare name means a run in rag-citations/results/
     grader_model = sys.argv[2] if len(sys.argv) > 2 else "gemini-3.5-flash-lite"
-    results_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "results")
+    results_dir = os.path.abspath(folder) if folder else os.path.join(os.path.dirname(os.path.abspath(__file__)), "results")
     questions = list(csv.DictReader(open(os.path.join(results_dir, f"{run_name}_grades.csv"))))
     claims_path = os.path.join(results_dir, f"{run_name}_claims.csv")
     claims = list(csv.DictReader(open(claims_path))) if os.path.exists(claims_path) else []
@@ -100,7 +101,9 @@ def main():
     # 4. Cost of the check: how much waiting the verifier adds
     answer_s = [float(q["answer_seconds"]) for q in questions]
     verify_s = [float(q["verify_seconds"]) for q in questions]
-    print(f"\nLatency per question: {sum(answer_s) / len(answer_s):.1f}s to answer + "
+    search_steps = "".join(f"{sum(float(q[k]) for q in questions) / len(questions):.2f}s to {k.removesuffix('_seconds')} + "
+                           for k in ("search_seconds", "rerank_seconds") if k in questions[0])  # timed separately from Stage 4
+    print(f"\nLatency per question: {search_steps}{sum(answer_s) / len(answer_s):.1f}s to answer + "
           f"{sum(verify_s) / len(verify_s):.1f}s to verify (rate-limit waits excluded)")
 
 
