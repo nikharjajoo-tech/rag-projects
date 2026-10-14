@@ -1,0 +1,41 @@
+id,question_type,piece,mode,rank,bucket
+E01,exact term,journal and year,vector,1,top 5
+E01,exact term,journal and year,bm25,1,top 5
+E01,exact term,journal and year,hybrid,1,top 5
+E01,exact term,journal and year,vector+rerank,1,top 5
+E01,exact term,journal and year,hybrid+rerank,1,top 5
+E02,exact term,Ramón y Cajal contract,vector,1,top 5
+E02,exact term,Ramón y Cajal contract,bm25,1,top 5
+E02,exact term,Ramón y Cajal contract,hybrid,1,top 5
+E02,exact term,Ramón y Cajal contract,vector+rerank,1,top 5
+E02,exact term,Ramón y Cajal contract,hybrid+rerank,1,top 5
+E03,exact term,VESPA finding,vector,1,top 5
+E03,exact term,VESPA finding,bm25,1,top 5
+E03,exact term,VESPA finding,hybrid,1,top 5
+E03,exact term,VESPA finding,vector+rerank,1,top 5
+E03,exact term,VESPA finding,hybrid+rerank,1,top 5
+E04,exact term,CTSA ACT expanded,vector,1,top 5
+E04,exact term,CTSA ACT expanded,bm25,1,top 5
+E04,exact term,CTSA ACT expanded,hybrid,1,top 5
+E04,exact term,CTSA ACT expanded,vector+rerank,1,top 5
+E04,exact term,CTSA ACT expanded,hybrid+rerank,1,top 5
+E05,exact term,baseline regularization,vector,1,top 5
+E05,exact term,baseline regularization,bm25,1,top 5
+E05,exact term,baseline regularization,hybrid,1,top 5
+E05,exact term,baseline regularization,vector+rerank,1,top 5
+E05,exact term,baseline regularization,hybrid+rerank,1,top 5
+E06,exact term,48 studies,vector,1,top 5
+E06,exact term,48 studies,bm25,1,top 5
+E06,exact term,48 studies,hybrid,1,top 5
+E06,exact term,48 studies,vector+rerank,1,top 5
+E06,exact term,48 studies,hybrid+rerank,1,top 5
+E07,exact term,IML expanded,vector,3,top 5
+E07,exact term,IML expanded,bm25,6,6-25
+E07,exact term,IML expanded,hybrid,2,top 5
+E07,exact term,IML expanded,vector+rerank,1,top 5
+E07,exact term,IML expanded,hybrid+rerank,1,top 5
+E08,exact term,what the LSTM detected,vector,1,top 5
+E08,exact term,what the LSTM detected,bm25,1,top 5
+E08,exact term,what the LSTM detected,hybrid,1,top 5
+E08,exact term,what the LSTM detected,vector+rerank,1,top 5
+E08,exact term,what the LSTM detected,hybrid+rerank,1,top 5

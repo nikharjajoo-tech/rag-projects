@@ -15,9 +15,14 @@
   incl. 4 near-miss), `run_hybrid.py` (Stage 3's pipeline with a pluggable search). Smoke-tested on Q01;
   vector scores match Stage 3 to 3 decimals. Stage 3 files changed only to plug in: `run_cited.main()` takes a
   search hook, `grade.py` reads other score names, `score_cited.py` takes a run path.
-- **Only the vector baseline has been measured** (`results/ranks_baseline.md`): 25 of 32 pieces in the top 5;
-  Q03's chunk at **47**, Q15's "two articles on drug repurposing" at 43, Q16's two Chen pieces at 84 and 112,
-  Q14's "sharing data" at 41: all **beyond the reranker's pool of 25**. Only Q14 (6, 10) has pieces at 6–25.
+- Vector baseline (`results/ranks_baseline.md`, before predictions): 25 of 32 pieces in the top 5; Q03's chunk
+  at 47, Q15's at 43, Q16's Chen pieces at 84 and 112, Q14's "sharing data" at 41: beyond the pool of 25.
+- **Experiment 1 done 2026-10-14** (ranks, all 5 methods; `EXPERIMENTS.md`): hybrid 21 of 32 (worse than
+  vector's 25); hybrid + rerank 24 (fixes Q03, breaks Q06 and Q07); exact-term set: vector already 8 of 8.
+  Predictions 1 and 2 wrong. 8 exact-term questions added (`test_set_exact.csv`, written by Claude
+  before any run on them; I should still review them).
+- **Next:** choose among the open threads in `EXPERIMENTS.md` (weighted fusion, pool size, reranker score as
+  "unsure" signal, near-duplicate IDs), then answer runs (2 per setting) for correctness and end-to-end latency.
 - Saboo's tutorial uses RAGLite (needs spaCy + Postgres: no builds here). Rebuilt the same three pieces
   in plain Python instead (Saboo also uses Cohere for reranking).
 - **`gemini-3.5-flash-lite` ignores temperature** (the library warns: "uses fixed sampling defaults; the

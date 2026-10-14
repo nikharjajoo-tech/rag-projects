@@ -1,0 +1,161 @@
+id,question_type,piece,mode,rank,bucket
+Q01,simple fact,16 of 23 met the criteria,vector,1,top 5
+Q01,simple fact,16 of 23 met the criteria,bm25,1,top 5
+Q01,simple fact,16 of 23 met the criteria,hybrid,1,top 5
+Q01,simple fact,16 of 23 met the criteria,vector+rerank,1,top 5
+Q01,simple fact,16 of 23 met the criteria,hybrid+rerank,1,top 5
+Q02,simple fact,just 6% correct,vector,1,top 5
+Q02,simple fact,just 6% correct,bm25,1,top 5
+Q02,simple fact,just 6% correct,hybrid,1,top 5
+Q02,simple fact,just 6% correct,vector+rerank,1,top 5
+Q02,simple fact,just 6% correct,hybrid+rerank,1,top 5
+Q03,simple fact,no studies for preclinical,vector,47,>25
+Q03,simple fact,no studies for preclinical,bm25,1,top 5
+Q03,simple fact,no studies for preclinical,hybrid,18,6-25
+Q03,simple fact,no studies for preclinical,vector+rerank,47,>25
+Q03,simple fact,no studies for preclinical,hybrid+rerank,1,top 5
+Q04,simple fact,searched until July 1 2020,vector,2,top 5
+Q04,simple fact,searched until July 1 2020,bm25,1,top 5
+Q04,simple fact,searched until July 1 2020,hybrid,1,top 5
+Q04,simple fact,searched until July 1 2020,vector+rerank,1,top 5
+Q04,simple fact,searched until July 1 2020,hybrid+rerank,1,top 5
+Q05,different wording,41 of 55 (74.5%),vector,2,top 5
+Q05,different wording,41 of 55 (74.5%),bm25,4,top 5
+Q05,different wording,41 of 55 (74.5%),hybrid,2,top 5
+Q05,different wording,41 of 55 (74.5%),vector+rerank,1,top 5
+Q05,different wording,41 of 55 (74.5%),hybrid+rerank,1,top 5
+Q06,different wording,trained in 2021,vector,1,top 5
+Q06,different wording,trained in 2021,bm25,47,>25
+Q06,different wording,trained in 2021,hybrid,13,6-25
+Q06,different wording,trained in 2021,vector+rerank,13,6-25
+Q06,different wording,trained in 2021,hybrid+rerank,11,6-25
+Q07,different wording,target trial framework,vector,2,top 5
+Q07,different wording,target trial framework,bm25,131,>25
+Q07,different wording,target trial framework,hybrid,27,>25
+Q07,different wording,target trial framework,vector+rerank,4,top 5
+Q07,different wording,target trial framework,hybrid+rerank,27,>25
+Q08,different wording,over 80% free text,vector,2,top 5
+Q08,different wording,over 80% free text,bm25,42,>25
+Q08,different wording,over 80% free text,hybrid,11,6-25
+Q08,different wording,over 80% free text,vector+rerank,1,top 5
+Q08,different wording,over 80% free text,hybrid+rerank,1,top 5
+Q09,exact term,OHDSI expanded,vector,2,top 5
+Q09,exact term,OHDSI expanded,bm25,3,top 5
+Q09,exact term,OHDSI expanded,hybrid,1,top 5
+Q09,exact term,OHDSI expanded,vector+rerank,1,top 5
+Q09,exact term,OHDSI expanded,hybrid+rerank,1,top 5
+Q10,exact term,BEHRT described,vector,1,top 5
+Q10,exact term,BEHRT described,bm25,6,6-25
+Q10,exact term,BEHRT described,hybrid,1,top 5
+Q10,exact term,BEHRT described,vector+rerank,1,top 5
+Q10,exact term,BEHRT described,hybrid+rerank,1,top 5
+Q11,spread out,Xu et al. assessed metformin,vector,1,top 5
+Q11,spread out,finding: decreased mortality,vector,5,top 5
+Q11,spread out,Xu et al. assessed metformin,bm25,1,top 5
+Q11,spread out,finding: decreased mortality,bm25,11,6-25
+Q11,spread out,Xu et al. assessed metformin,hybrid,1,top 5
+Q11,spread out,finding: decreased mortality,hybrid,4,top 5
+Q11,spread out,Xu et al. assessed metformin,vector+rerank,1,top 5
+Q11,spread out,finding: decreased mortality,vector+rerank,2,top 5
+Q11,spread out,Xu et al. assessed metformin,hybrid+rerank,1,top 5
+Q11,spread out,finding: decreased mortality,hybrid+rerank,2,top 5
+Q12,exact term,BACE1 and Alzheimer's,vector,1,top 5
+Q12,exact term,BACE1 and Alzheimer's,bm25,1,top 5
+Q12,exact term,BACE1 and Alzheimer's,hybrid,1,top 5
+Q12,exact term,BACE1 and Alzheimer's,vector+rerank,1,top 5
+Q12,exact term,BACE1 and Alzheimer's,hybrid+rerank,1,top 5
+Q13,spread out,Chen: XAI interprets decisions,vector,3,top 5
+Q13,spread out,Chen: XAI for drug repurposing,vector,2,top 5
+Q13,spread out,Blanco: XAI explanations,vector,1,top 5
+Q13,spread out,Chen: XAI interprets decisions,bm25,1,top 5
+Q13,spread out,Chen: XAI for drug repurposing,bm25,12,6-25
+Q13,spread out,Blanco: XAI explanations,bm25,2,top 5
+Q13,spread out,Chen: XAI interprets decisions,hybrid,2,top 5
+Q13,spread out,Chen: XAI for drug repurposing,hybrid,4,top 5
+Q13,spread out,Blanco: XAI explanations,hybrid,1,top 5
+Q13,spread out,Chen: XAI interprets decisions,vector+rerank,1,top 5
+Q13,spread out,Chen: XAI for drug repurposing,vector+rerank,4,top 5
+Q13,spread out,Blanco: XAI explanations,vector+rerank,2,top 5
+Q13,spread out,Chen: XAI interprets decisions,hybrid+rerank,1,top 5
+Q13,spread out,Chen: XAI for drug repurposing,hybrid+rerank,4,top 5
+Q13,spread out,Blanco: XAI explanations,hybrid+rerank,2,top 5
+Q14,spread out,Chen: data quality,vector,6,6-25
+Q14,spread out,Chen: sharing data is hard,vector,41,>25
+Q14,spread out,Blanco: low quality or inconsistent data,vector,1,top 5
+Q14,spread out,Blanco: biased training data,vector,10,6-25
+Q14,spread out,Chen: data quality,bm25,22,6-25
+Q14,spread out,Chen: sharing data is hard,bm25,103,>25
+Q14,spread out,Blanco: low quality or inconsistent data,bm25,86,>25
+Q14,spread out,Blanco: biased training data,bm25,24,6-25
+Q14,spread out,Chen: data quality,hybrid,4,top 5
+Q14,spread out,Chen: sharing data is hard,hybrid,63,>25
+Q14,spread out,Blanco: low quality or inconsistent data,hybrid,15,6-25
+Q14,spread out,Blanco: biased training data,hybrid,7,6-25
+Q14,spread out,Chen: data quality,vector+rerank,4,top 5
+Q14,spread out,Chen: sharing data is hard,vector+rerank,41,>25
+Q14,spread out,Blanco: low quality or inconsistent data,vector+rerank,7,6-25
+Q14,spread out,Blanco: biased training data,vector+rerank,6,6-25
+Q14,spread out,Chen: data quality,hybrid+rerank,4,top 5
+Q14,spread out,Chen: sharing data is hard,hybrid+rerank,63,>25
+Q14,spread out,Blanco: low quality or inconsistent data,hybrid+rerank,7,6-25
+Q14,spread out,Blanco: biased training data,hybrid+rerank,6,6-25
+Q15,spread out,55 on adverse events,vector,2,top 5
+Q15,spread out,2 on drug repurposing,vector,43,>25
+Q15,spread out,55 on adverse events,bm25,6,6-25
+Q15,spread out,2 on drug repurposing,bm25,28,>25
+Q15,spread out,55 on adverse events,hybrid,3,top 5
+Q15,spread out,2 on drug repurposing,hybrid,28,>25
+Q15,spread out,55 on adverse events,vector+rerank,5,top 5
+Q15,spread out,2 on drug repurposing,vector+rerank,43,>25
+Q15,spread out,55 on adverse events,hybrid+rerank,5,top 5
+Q15,spread out,2 on drug repurposing,hybrid+rerank,28,>25
+Q16,spread out,Chen: external validation,vector,84,>25
+Q16,spread out,Chen: loop back to clinical studies,vector,112,>25
+Q16,spread out,Blanco: humans validate,vector,1,top 5
+Q16,spread out,Blanco: check reliable sources,vector,3,top 5
+Q16,spread out,Chen: external validation,bm25,23,6-25
+Q16,spread out,Chen: loop back to clinical studies,bm25,191,>25
+Q16,spread out,Blanco: humans validate,bm25,37,>25
+Q16,spread out,Blanco: check reliable sources,bm25,84,>25
+Q16,spread out,Chen: external validation,hybrid,34,>25
+Q16,spread out,Chen: loop back to clinical studies,hybrid,171,>25
+Q16,spread out,Blanco: humans validate,hybrid,5,top 5
+Q16,spread out,Blanco: check reliable sources,hybrid,14,6-25
+Q16,spread out,Chen: external validation,vector+rerank,84,>25
+Q16,spread out,Chen: loop back to clinical studies,vector+rerank,112,>25
+Q16,spread out,Blanco: humans validate,vector+rerank,1,top 5
+Q16,spread out,Blanco: check reliable sources,vector+rerank,3,top 5
+Q16,spread out,Chen: external validation,hybrid+rerank,34,>25
+Q16,spread out,Chen: loop back to clinical studies,hybrid+rerank,171,>25
+Q16,spread out,Blanco: humans validate,hybrid+rerank,1,top 5
+Q16,spread out,Blanco: check reliable sources,hybrid+rerank,3,top 5
+N01,near-miss,Zhang et al. statin study,vector,1,top 5
+N01,near-miss,Zhang et al. statin study,bm25,1,top 5
+N01,near-miss,Zhang et al. statin study,hybrid,1,top 5
+N01,near-miss,Zhang et al. statin study,vector+rerank,1,top 5
+N01,near-miss,Zhang et al. statin study,hybrid+rerank,1,top 5
+N03,near-miss,T-LSTM adds elapsed time,vector,1,top 5
+N03,near-miss,T-LSTM adds elapsed time,bm25,1,top 5
+N03,near-miss,T-LSTM adds elapsed time,hybrid,1,top 5
+N03,near-miss,T-LSTM adds elapsed time,vector+rerank,1,top 5
+N03,near-miss,T-LSTM adds elapsed time,hybrid+rerank,1,top 5
+N05,near-miss,Blanco: bias and unequal access,vector,2,top 5
+N05,near-miss,Blanco: job loss,vector,2,top 5
+N05,near-miss,Blanco: privacy and security,vector,3,top 5
+N05,near-miss,Blanco: bias and unequal access,bm25,7,6-25
+N05,near-miss,Blanco: job loss,bm25,1,top 5
+N05,near-miss,Blanco: privacy and security,bm25,1,top 5
+N05,near-miss,Blanco: bias and unequal access,hybrid,4,top 5
+N05,near-miss,Blanco: job loss,hybrid,1,top 5
+N05,near-miss,Blanco: privacy and security,hybrid,1,top 5
+N05,near-miss,Blanco: bias and unequal access,vector+rerank,1,top 5
+N05,near-miss,Blanco: job loss,vector+rerank,1,top 5
+N05,near-miss,Blanco: privacy and security,vector+rerank,3,top 5
+N05,near-miss,Blanco: bias and unequal access,hybrid+rerank,1,top 5
+N05,near-miss,Blanco: job loss,hybrid+rerank,1,top 5
+N05,near-miss,Blanco: privacy and security,hybrid+rerank,3,top 5
+N07,near-miss,Spasic et al. NLP system,vector,1,top 5
+N07,near-miss,Spasic et al. NLP system,bm25,1,top 5
+N07,near-miss,Spasic et al. NLP system,hybrid,1,top 5
+N07,near-miss,Spasic et al. NLP system,vector+rerank,1,top 5
+N07,near-miss,Spasic et al. NLP system,hybrid+rerank,1,top 5

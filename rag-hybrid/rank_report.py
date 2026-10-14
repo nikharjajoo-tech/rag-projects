@@ -21,7 +21,8 @@ from collections import defaultdict
 from search import HYBRID_DIR, MODES, POOL, Searcher
 from run_eval import EVAL_DIR, TOP_K
 
-TEST_SETS = [os.path.join(EVAL_DIR, "test_set.csv"), os.path.join(HYBRID_DIR, "..", "rag-citations", "test_set_nearmiss.csv")]
+TEST_SETS = [os.path.join(EVAL_DIR, "test_set.csv"), os.path.join(HYBRID_DIR, "..", "rag-citations", "test_set_nearmiss.csv"),
+             os.path.join(HYBRID_DIR, "test_set_exact.csv")]
 
 
 def squash(text):

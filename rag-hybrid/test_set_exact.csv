@@ -1,0 +1,9 @@
+id,question_type,question,correct_answer,source_pdf,page,notes
+E01,exact term,"Which journal published the paper with PMID 33358699, and in what year?","Drug Discovery Today, 2020",Chen,1,An identifier in the question: the kind of lookup a researcher pastes in
+E02,exact term,What is contract RYC-2016-20335 mentioned in the acknowledgements?,"A ""Ramón y Cajal"" contract from the Ministerio de Ciencia, Innovación y Universidades (thanked by R.G.-F.)",Blanco,8,Grant codes: other codes (RTI2018-…; PID2019-…; ED431…) sit in the same passage
+E03,exact term,What did the VESPA project demonstrate?,"That EHR-based biobanks could be cost-effective tools for establishing disease and drug associations, since samples can be reused for many studies without extra collection costs",Chen,8,"VESPA = Vanderbilt Electronic Systems for Pharmacogenomic Assessment"
+E04,exact term,What does CTSA ACT stand for?,Clinical and Translational Service Award Accrual to Clinical Trials (the paper spells it 'Trails'),Chen,7,Same sentence as OHDSI and PCORnet: a near-miss acronym answer is easy
+E05,exact term,What approach did Kuang et al. develop?,"An ML-based drug repurposing approach called baseline regularization, predicting the effects of drugs on physical measurements such as fasting blood glucose",Chen,5,
+E06,exact term,How many studies did the Luo et al. review identify?,48 (a 2017 review),Chen,4,Trap: Singh et al. (20 studies) and Lai et al. (13) are nearby
+E07,exact term,"What does IML stand for, according to the Blanco paper?",Interpretable machine learning,Blanco,4,
+E08,exact term,What did the LSTM model by Yang et al. detect?,"Medication, adverse events and their relations, from clinical text",Chen,5,Trap: T-LSTM (Chen p7) is a different LSTM

@@ -31,3 +31,11 @@ N05,Blanco: bias and unequal access,could result in unequal access to medical tr
 N05,Blanco: job loss,raises concerns about job loss due to automation
 N05,Blanco: privacy and security,raises questions about data privacy and security
 N07,Spasic et al. NLP system,Spasic et al. used an NLP system that combined rule-based knowledge infusion
+E01,journal and year,PMID: 33358699
+E02,Ramón y Cajal contract,RYC-2016-20335
+E03,VESPA finding,(VESPA) Project
+E04,CTSA ACT expanded,(CTSA ACT) network
+E05,baseline regularization,"called baseline regularization, to predict the effects of drugs"
+E06,48 studies,a total of 48 studies were identified
+E07,IML expanded,interpretable machine learning (IML)
+E08,what the LSTM detected,"to detect medication, AEs, and their relations"
