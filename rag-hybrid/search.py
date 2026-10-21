@@ -40,6 +40,7 @@ SCORE_NAMES = {"vector": "similarity", "bm25": "bm25", "hybrid": "rrf",
 BM25_K1 = 1.5    # how fast repeats of a word stop counting (0 = once is enough, higher = repeats keep adding)
 BM25_B = 0.75    # how much long chunks are penalised (0 = not at all, 1 = fully)
 RRF_K = 60       # fusion: higher = the two lists' top ranks matter less (60 is the usual default)
+VECTOR_WEIGHT = 1.0  # fusion: votes for the meaning-based list; keyword search always gets 1 (2 = meaning counts double)
 POOL = 25        # candidates the reranker reads: wider finds more, but costs more tokens and time
 RERANK_MODEL = "rerank-v3.5"
 RERANK_GAP_SECONDS = 6.5  # Cohere's trial allows 10 rerank calls a minute
@@ -81,13 +82,13 @@ class BM25:
         return scores
 
 
-def fuse(*rankings):
-    """Reciprocal rank fusion: each list votes 1 / (RRF_K + rank) for every chunk in it. Uses positions,
+def fuse(*rankings, weights=None):
+    """Reciprocal rank fusion: each list votes weight / (RRF_K + rank) for every chunk in it. Uses positions,
     not scores, because a similarity of 0.68 and a BM25 score of 12.4 aren't on the same scale."""
     votes = Counter()
-    for ranking in rankings:
+    for ranking, weight in zip(rankings, weights or [1] * len(rankings)):
         for rank, (i, _) in enumerate(ranking, 1):
-            votes[i] += 1 / (RRF_K + rank)
+            votes[i] += weight / (RRF_K + rank)
     return votes.most_common()
 
 
@@ -119,6 +120,8 @@ class Searcher:
         self.embedding_cache = Cache(f"question_embeddings_{db_name}")
         self.rerank_cache = Cache("rerank.json")
         self.last_rerank = 0.0
+        self.vector_weight = VECTOR_WEIGHT
+        self.pool = POOL
 
     # --- the first stage: rank every chunk ------------------------------------------------------------------
 
@@ -146,15 +149,18 @@ class Searcher:
             return self.bm25_ranking(question)[0], time.time() - start
         by_meaning, embed_seconds = self.vector_ranking(question)
         start = time.time()  # after the embedding call, which may have come from the cache
-        ranking = by_meaning if method == "vector" else fuse(by_meaning, self.bm25_ranking(question)[0])
+        if method == "vector":
+            ranking = by_meaning
+        else:
+            ranking = fuse(by_meaning, self.bm25_ranking(question)[0], weights=[self.vector_weight, 1])
         return ranking, embed_seconds + time.time() - start
 
     # --- the second stage: the reranker ---------------------------------------------------------------------
 
     def rerank(self, question, ranking):
-        """Sends the top POOL chunks to Cohere, which reads the question and each chunk together and scores
+        """Sends the top `pool` chunks to Cohere, which reads the question and each chunk together and scores
         how well the chunk answers it. Returns (the pool, reordered, with relevance scores; seconds)."""
-        pool = [i for i, _ in ranking[:POOL]]
+        pool = [i for i, _ in ranking[:self.pool]]
         texts = [self.docs[i].page_content for i in pool]
         key = hashlib.sha1("\n".join([RERANK_MODEL, question] + texts).encode()).hexdigest()
         saved = self.rerank_cache.get(key)
@@ -169,9 +175,14 @@ class Searcher:
             if pause > 0:
                 time.sleep(pause)  # rate-limit wait: not counted as latency
             start = time.time()
-            response = httpx.post("https://api.cohere.com/v2/rerank", timeout=60,
-                                  headers={"Authorization": f"Bearer {os.environ['COHERE_API_KEY']}"},
-                                  json={"model": RERANK_MODEL, "query": question, "documents": texts})
+            try:
+                response = httpx.post("https://api.cohere.com/v2/rerank", timeout=60,
+                                      headers={"Authorization": f"Bearer {os.environ['COHERE_API_KEY']}"},
+                                      json={"model": RERANK_MODEL, "query": question, "documents": texts})
+            except httpx.TransportError as error:  # dropped connection: try again (the time isn't saved)
+                print(f"  Cohere connection failed ({error}); retrying...")
+                self.last_rerank = time.time()
+                continue
             seconds, self.last_rerank = time.time() - start, time.time()
             if response.status_code == 429:
                 print("  Cohere per-minute limit; waiting 60s...")
@@ -184,12 +195,12 @@ class Searcher:
 
     def ranking(self, question, mode):
         """(every chunk index with its score, best first; timings). With a reranker, the reordered pool
-        comes first and the rest of the first stage after it: a chunk ranked beyond POOL can't be rescued."""
+        comes first and the rest of the first stage after it: a chunk ranked beyond the pool can't be rescued."""
         first, search_seconds = self.first_stage(question, mode.removesuffix("+rerank"))
         timings = {"search_seconds": search_seconds}
         if mode.endswith("+rerank"):
             reranked, timings["rerank_seconds"] = self.rerank(question, first)
-            first = reranked + first[POOL:]
+            first = reranked + first[self.pool:]
         return first, timings
 
     def search(self, question, mode, k=TOP_K):

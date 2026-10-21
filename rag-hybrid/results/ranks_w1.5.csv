@@ -1,0 +1,81 @@
+id,question_type,piece,mode,rank,bucket
+Q01,simple fact,16 of 23 met the criteria,hybrid,1,top 5
+Q01,simple fact,16 of 23 met the criteria,hybrid+rerank,1,top 5
+Q02,simple fact,just 6% correct,hybrid,1,top 5
+Q02,simple fact,just 6% correct,hybrid+rerank,1,top 5
+Q03,simple fact,no studies for preclinical,hybrid,21,6-25
+Q03,simple fact,no studies for preclinical,hybrid+rerank,1,top 5
+Q04,simple fact,searched until July 1 2020,hybrid,1,top 5
+Q04,simple fact,searched until July 1 2020,hybrid+rerank,1,top 5
+Q05,different wording,41 of 55 (74.5%),hybrid,2,top 5
+Q05,different wording,41 of 55 (74.5%),hybrid+rerank,1,top 5
+Q06,different wording,trained in 2021,hybrid,10,6-25
+Q06,different wording,trained in 2021,hybrid+rerank,12,6-25
+Q07,different wording,target trial framework,hybrid,18,6-25
+Q07,different wording,target trial framework,hybrid+rerank,6,6-25
+Q08,different wording,over 80% free text,hybrid,9,6-25
+Q08,different wording,over 80% free text,hybrid+rerank,1,top 5
+Q09,exact term,OHDSI expanded,hybrid,1,top 5
+Q09,exact term,OHDSI expanded,hybrid+rerank,1,top 5
+Q10,exact term,BEHRT described,hybrid,1,top 5
+Q10,exact term,BEHRT described,hybrid+rerank,1,top 5
+Q11,spread out,Xu et al. assessed metformin,hybrid,1,top 5
+Q11,spread out,finding: decreased mortality,hybrid,4,top 5
+Q11,spread out,Xu et al. assessed metformin,hybrid+rerank,1,top 5
+Q11,spread out,finding: decreased mortality,hybrid+rerank,2,top 5
+Q12,exact term,BACE1 and Alzheimer's,hybrid,1,top 5
+Q12,exact term,BACE1 and Alzheimer's,hybrid+rerank,1,top 5
+Q13,spread out,Chen: XAI interprets decisions,hybrid,2,top 5
+Q13,spread out,Chen: XAI for drug repurposing,hybrid,4,top 5
+Q13,spread out,Blanco: XAI explanations,hybrid,1,top 5
+Q13,spread out,Chen: XAI interprets decisions,hybrid+rerank,1,top 5
+Q13,spread out,Chen: XAI for drug repurposing,hybrid+rerank,4,top 5
+Q13,spread out,Blanco: XAI explanations,hybrid+rerank,2,top 5
+Q14,spread out,Chen: data quality,hybrid,4,top 5
+Q14,spread out,Chen: sharing data is hard,hybrid,51,>25
+Q14,spread out,Blanco: low quality or inconsistent data,hybrid,11,6-25
+Q14,spread out,Blanco: biased training data,hybrid,5,top 5
+Q14,spread out,Chen: data quality,hybrid+rerank,4,top 5
+Q14,spread out,Chen: sharing data is hard,hybrid+rerank,51,>25
+Q14,spread out,Blanco: low quality or inconsistent data,hybrid+rerank,7,6-25
+Q14,spread out,Blanco: biased training data,hybrid+rerank,6,6-25
+Q15,spread out,55 on adverse events,hybrid,4,top 5
+Q15,spread out,2 on drug repurposing,hybrid,31,>25
+Q15,spread out,55 on adverse events,hybrid+rerank,5,top 5
+Q15,spread out,2 on drug repurposing,hybrid+rerank,31,>25
+Q16,spread out,Chen: external validation,hybrid,43,>25
+Q16,spread out,Chen: loop back to clinical studies,hybrid,167,>25
+Q16,spread out,Blanco: humans validate,hybrid,3,top 5
+Q16,spread out,Blanco: check reliable sources,hybrid,10,6-25
+Q16,spread out,Chen: external validation,hybrid+rerank,43,>25
+Q16,spread out,Chen: loop back to clinical studies,hybrid+rerank,167,>25
+Q16,spread out,Blanco: humans validate,hybrid+rerank,1,top 5
+Q16,spread out,Blanco: check reliable sources,hybrid+rerank,3,top 5
+N01,near-miss,Zhang et al. statin study,hybrid,1,top 5
+N01,near-miss,Zhang et al. statin study,hybrid+rerank,1,top 5
+N03,near-miss,T-LSTM adds elapsed time,hybrid,1,top 5
+N03,near-miss,T-LSTM adds elapsed time,hybrid+rerank,1,top 5
+N05,near-miss,Blanco: bias and unequal access,hybrid,4,top 5
+N05,near-miss,Blanco: job loss,hybrid,3,top 5
+N05,near-miss,Blanco: privacy and security,hybrid,3,top 5
+N05,near-miss,Blanco: bias and unequal access,hybrid+rerank,1,top 5
+N05,near-miss,Blanco: job loss,hybrid+rerank,1,top 5
+N05,near-miss,Blanco: privacy and security,hybrid+rerank,3,top 5
+N07,near-miss,Spasic et al. NLP system,hybrid,1,top 5
+N07,near-miss,Spasic et al. NLP system,hybrid+rerank,1,top 5
+E01,exact term,journal and year,hybrid,1,top 5
+E01,exact term,journal and year,hybrid+rerank,1,top 5
+E02,exact term,Ramón y Cajal contract,hybrid,1,top 5
+E02,exact term,Ramón y Cajal contract,hybrid+rerank,1,top 5
+E03,exact term,VESPA finding,hybrid,1,top 5
+E03,exact term,VESPA finding,hybrid+rerank,1,top 5
+E04,exact term,CTSA ACT expanded,hybrid,1,top 5
+E04,exact term,CTSA ACT expanded,hybrid+rerank,1,top 5
+E05,exact term,baseline regularization,hybrid,1,top 5
+E05,exact term,baseline regularization,hybrid+rerank,1,top 5
+E06,exact term,48 studies,hybrid,1,top 5
+E06,exact term,48 studies,hybrid+rerank,1,top 5
+E07,exact term,IML expanded,hybrid,2,top 5
+E07,exact term,IML expanded,hybrid+rerank,1,top 5
+E08,exact term,what the LSTM detected,hybrid,1,top 5
+E08,exact term,what the LSTM detected,hybrid+rerank,1,top 5

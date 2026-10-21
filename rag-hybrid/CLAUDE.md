@@ -21,8 +21,22 @@
   vector's 25); hybrid + rerank 24 (fixes Q03, breaks Q06 and Q07); exact-term set: vector already 8 of 8.
   Predictions 1 and 2 wrong. 8 exact-term questions added (`test_set_exact.csv`, written by Claude
   before any run on them; I should still review them).
-- **Next:** choose among the open threads in `EXPERIMENTS.md` (weighted fusion, pool size, reranker score as
-  "unsure" signal, near-duplicate IDs), then answer runs (2 per setting) for correctness and end-to-end latency.
+- **Experiment 2 done 2026-10-15** (thread A, weighted merge; `EXPERIMENTS.md`): meaning-based search at 1.5, 2
+  or 3 votes vs keyword search's 1. Hybrid 22 / 22 / 24, hybrid + rerank 24 / 23 / 23: never beats meaning-based
+  alone (25). Q03 leaves the reranker's pool between 1.5 and 2. The reranker's own misses (Q06, Q14) now cap it.
+  Predictions: 1 of 3 right (Q03 pushed out). Setting: `VECTOR_WEIGHT` in `search.py`, `--vector-weight`.
+- **Experiment 3 done 2026-10-15** (thread B, reranker reads 50): both reranked methods stay at 24 of 32. Meaning-
+  based + rerank now fixes Q03 without keyword search; Q07 slips 4 → 7 (more distractors); Q15's piece is seen but
+  ranked 30th. Median rerank call 0.64 → 0.93s. Predictions: 0 of 3 fully right. Setting: `--pool`. The reranker
+  call now retries after a dropped connection.
+- **Experiment 4 done 2026-10-15** (answer runs, 2 per setting): meaning-based only 80% / 80% (matches Stage 3),
+  hybrid + rerank (25) 78% / 75%, meaning-based + rerank (50) 72% / 72%. Reranker: +~1s, wins Q03, loses Q06, Q14,
+  and Q07 (confidently wrong, well cited). Decision: **ship meaning-based search alone** on this library.
+  Predictions: 2 of 3 right (Q06 refused; ~1s). Bonus: the reranker's top score separated every reranker-caused failure
+  (all < 0.35) from every correct answer (all ≥ 0.55); it misses model misreadings (Q09, Q15): a lead for thread C, not yet a finding.
+- **Next:** explain-back + PM note, `README.md` for rag-hybrid, mark Stage 4 built in the root README. Optional:
+  thread C properly (reranker score as "unsure" signal, with a cut-off fixed before testing on the near-miss set);
+  thread D (near-duplicate codes); keyword search only for rare terms.
 - Saboo's tutorial uses RAGLite (needs spaCy + Postgres: no builds here). Rebuilt the same three pieces
   in plain Python instead (Saboo also uses Cohere for reranking).
 - **`gemini-3.5-flash-lite` ignores temperature** (the library warns: "uses fixed sampling defaults; the
@@ -45,8 +59,10 @@
   - **Q16** (validation, both papers): all 5 slots went to Blanco; none to Chen. A one-paper-takes-all
     problem, not an exact-term one.
   - **Q09** (OHDSI): **not a search failure** — the answer chunk was #2 and the model still said "not
-    mentioned" (temperature-1 randomness; it passed in `cited` and `norefs`). Hybrid search shouldn't
-    get credit if it flips back.
+    mentioned". First read as randomness; **Experiment 4 corrected this**: refused 7 of 7 with sentence chunks,
+    even at rank 1. The sentence lists three networks ("... Observational Health Data Sciences and Informatics
+    (OHDSI) consortium [52] ...") and the model won't read it as a definition. Passed with the older, larger
+    chunks (`cited`, `norefs`). A prompt or chunking problem.
 
 ## My predictions (written 2026-10-14, after the vector baseline ranks, before any new method was measured)
 1. **Keyword search:** "Adding keyword search will search for the meaning of the query as well as the exact

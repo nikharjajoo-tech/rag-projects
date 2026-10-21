@@ -7,6 +7,7 @@ Usage (from the rag-projects folder):
     rag-chain/.venv/bin/python rag-hybrid/run_hybrid.py vector --search vector              # Stage 3's search, re-timed
     rag-chain/.venv/bin/python rag-hybrid/run_hybrid.py hybrid_rerank --search hybrid+rerank
     rag-chain/.venv/bin/python rag-hybrid/run_hybrid.py smoke --search hybrid --only Q01,Q09
+    rag-chain/.venv/bin/python rag-hybrid/run_hybrid.py vrr50_a --search vector+rerank --pool 50
     rag-chain/.venv/bin/python rag-eval/grade.py rag-hybrid/results/hybrid_rerank gemini-3.5-flash-lite
     python3 rag-citations/score_cited.py rag-hybrid/results/hybrid_rerank
 
@@ -21,11 +22,17 @@ import run_cited
 
 def make_search(args):
     searcher = Searcher(args.db)
-    reranker = f" (reranker `{RERANK_MODEL}` reads the top {POOL})" if args.search.endswith("+rerank") else ""
+    searcher.pool = args.pool
+    reranker = f" (reranker `{RERANK_MODEL}` reads the top {args.pool})" if args.search.endswith("+rerank") else ""
     note = f"search `{args.search}`{reranker}, database `{args.db}`"
     return (lambda question: searcher.search(question, args.search)), note, SCORE_NAMES[args.search]
 
 
+def add_args(parser):
+    parser.add_argument("--search", choices=MODES, default="hybrid+rerank")
+    parser.add_argument("--pool", type=int, default=POOL, help=f"candidates the reranker reads (default {POOL})")
+
+
 if __name__ == "__main__":
     run_cited.main(make_search=make_search, results_dir=os.path.join(HYBRID_DIR, "results"),
-                   extra_args=lambda parser: parser.add_argument("--search", choices=MODES, default="hybrid+rerank"))
+                   extra_args=add_args)
