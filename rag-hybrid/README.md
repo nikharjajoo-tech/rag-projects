@@ -17,6 +17,7 @@ grader and whole-sentence database (`pharma_db_sentences.json`). Only the search
 | `answer_chunks.csv` | A phrase marking each answer piece: 20 answerable questions, 32 pieces, plus 8 exact-term questions |
 | `test_set_exact.csv` | 8 exact-term questions: a PMID, a grant code, acronyms, author names |
 | `run_hybrid.py` | Stage 3's pipeline (cited answer + fact-checker) with a pluggable search |
+| `break_codes.py` | Break it on purpose: 14 made-up near-identical trial IDs and compound codes |
 | `EXPERIMENTS.md` | Every run: prediction first, then result |
 | `results/` | Rank reports (`ranks_*`) and answer runs (`answers_*`) |
 
@@ -71,7 +72,9 @@ On the 8 exact-term questions, every method except keyword-only already finds al
 | Meaning-based + reranker (reads 50) | 72% / 72% | 2 / 2 | +1.0s |
 
 - **Embeddings didn't miss exact terms here.** With 232 chunks, a rare code or acronym makes its chunk the
-  nearest anyway. The textbook failure needs near-identical codes or a far bigger library.
+  nearest anyway. Even 14 made-up near-identical codes (NCT04512341–48, RX-2041 / RX-2014 / ...) didn't break it
+  (`break_codes.py`): meaning-based search ranked the right one 1st, 7 of 7, but by a 1–4% margin, where keyword
+  search led by 1.4–2x. And every method filled the rest of the top 5 with look-alikes holding wrong numbers.
 - **Merging gave a weak list an equal vote.** Most questions are worded differently from the papers, so keyword
   search alone is weak (15 of 32), and merging pushed out answers meaning-based search had found. Weighting it
   down just moves the result back towards meaning-based search alone.

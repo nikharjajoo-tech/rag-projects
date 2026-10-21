@@ -215,3 +215,40 @@ it introduces the worst kind of error: confident, well-cited, wrong (0 in the co
 **Ship meaning-based search alone.** Revisit when the library grows or users start searching for near-identical codes.
 The reranker's score is a lead worth keeping: it may be more useful as a "not sure" alarm than as a ranker.
 - Calls: ~300 Gemini chat calls (answers, fact-checks, grades); 8 new Cohere calls (204 of 1,000 used).
+
+## Experiment 5: break it on purpose with near-identical codes (2026-10-21)
+
+**Setup:** `break_codes.py`. 14 made-up chunks added to an in-memory copy of the library: 8 trial registry
+entries identical except the trial ID's last digit and the patient count (NCT04512341–48), and 6 compounds whose
+codes reuse the same four digits (RX-2041, RX-2014, RX-2401, ...), each with its own potency. 7 questions each
+name one ID or code. Rank report only, no chat calls. All fictional.
+
+**Prediction** (Claude's, written before the run; I moved on to Stage 5 and asked for this to be run): meaning-
+based search puts the right chunk 1st in **2 or fewer of 7** (the look-alikes have near-identical embeddings);
+keyword search ranks it 1st in **7 of 7** (the code is a word only one chunk contains); hybrid gets most of them
+1st; the reranker gets all 7 (it reads the code in the question and in the chunk together).
+
+**Result** (`results/break_codes.md`): **every method put the right chunk 1st, 7 of 7**, meaning-based search included.
+
+| | Meaning-based | Keyword (BM25) |
+|---|---|---|
+| Right chunk 1st | 7 of 7 | 7 of 7 |
+| Margin over the best look-alike | **1–4%** (similarity 0.775 vs 0.762 for NCT04512343) | **1.4–2x** (score 12.6 vs 6.3) |
+| Look-alikes with wrong numbers also in the top 5 | 4 of 4 slots | 4 of 4 slots |
+
+**What happened**
+- **The textbook break didn't happen.** `gemini-embedding-001` does encode the digits: NCT04512343's runner-up was
+  NCT04512342, then ...44, its numeric neighbours. It told the codes apart, but only just.
+- **Keyword search wins on margin, not on rank.** It knows the code is a word only one chunk contains; meaning-based
+  search wins by a hair that longer chunks, a reworded question or a bigger library could erase. Not tested here.
+- **The real risk moved downstream.** Every method fills the other 4 slots with look-alikes holding plausible wrong
+  numbers (212, 348, 156 ... patients). Search got it right; the model now has to pick the right line out of five
+  nearly identical ones. In a product: show the code in the citation, so the researcher sees "NCT04512343" next to
+  the number.
+
+**Prediction vs. result:** meaning-based 2 or fewer of 7 → **7 of 7**. Wrong. Keyword search 7 of 7 → right. The
+reranker 7 of 7 → right.
+
+**So what (for a PM):** "embeddings can't do exact codes" is older advice than the embedding model. Test it on your
+own codes before paying for hybrid search; and watch the margin, not just the rank: a 1% win is a coin you haven't
+seen land on its edge yet.

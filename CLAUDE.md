@@ -25,3 +25,7 @@ Intel Mac (x86_64), Python 3.14 — no builds of `onnxruntime`, PyTorch, `chroma
 Gemini free tier: 100 embedding requests/minute plus a daily cap — design uploads around it.
 Chat model `gemini-3.8-flash` free tier allows only 20 requests/day (found 2026-10-06; resets ~midnight
 Pacific) — so the series uses `gemini-3.5-flash-lite` instead. Check live usage at https://ai.dev/rate-limit.
+`gemini-3.5-flash-lite` **ignores temperature** (found 2026-10-15; the library warns "uses fixed sampling
+defaults"), so answers vary run to run and can't be made repeatable. Run each setting at least twice, and
+prefer checks with no model randomness (e.g. Stage 4's rank report) when comparing search changes.
+Cohere trial key (`COHERE_API_KEY` in `rag-chain/.env`, used since Stage 4): 1,000 calls/month, 10/minute.

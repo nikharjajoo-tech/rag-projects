@@ -36,9 +36,14 @@
   (all < 0.35) from every correct answer (all ≥ 0.55); it misses model misreadings (Q09, Q15): a lead for thread C, not yet a finding.
 - Experiments 2–4 committed (`d99cfd4`, not pushed). `README.md` written 2026-10-21.
 - **Stage 4 complete 2026-10-21:** explain-back done (my 5 answers, with feedback folded in) → `LEARNINGS.md`;
-  root README marks Stage 4 built. Optional extras:
-  thread C properly (reranker score as "unsure" signal, with a cut-off fixed before testing on the near-miss set);
-  thread D (near-duplicate codes); keyword search only for rare terms.
+  root README marks Stage 4 built.
+- **Experiment 5 done 2026-10-21** (thread D, break it with near-identical codes; `break_codes.py`, 14 made-up
+  chunks): every method ranked the right code 1st, 7 of 7. Meaning-based search won by only 1–4% similarity;
+  keyword search by 1.4–2x. All methods fill the rest of the top 5 with look-alikes holding wrong numbers.
+  Claude's prediction (meaning-based ≤ 2 of 7) wrong. Root `CLAUDE.md` now notes the temperature finding and
+  the Cohere key.
+- Optional extras, not done: thread C properly (reranker score as "unsure" signal, with a cut-off fixed before
+  testing on the near-miss set); keyword search only for rare terms; Q09 prompt fix; a slot per paper for Q16.
 - Saboo's tutorial uses RAGLite (needs spaCy + Postgres: no builds here). Rebuilt the same three pieces
   in plain Python instead (Saboo also uses Cohere for reranking).
 - **`gemini-3.5-flash-lite` ignores temperature** (the library warns: "uses fixed sampling defaults; the

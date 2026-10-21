@@ -14,6 +14,11 @@ the question, and also why it can blur exact terms: to it, `NCT01234567` and `NC
 search on its own was much weaker (15 of 32 answer pieces vs. 25), because our questions are worded differently
 from the papers. Its one real advantage, exact terms, never showed: in a 232-chunk library with no near-identical
 codes, a PMID, grant code or acronym makes its own chunk the closest match anyway (8 of 8 found by meaning).
+Then I tried to break it on purpose with 14 made-up near-identical codes (NCT04512341–48; RX-2041, RX-2014, ...).
+Meaning-based search still ranked the right one 1st every time, but by a 1–4% margin, where keyword search led by
+1.4–2x. "Embeddings can't do exact codes" is older advice than today's embedding models: test it on your own codes,
+and watch the margin, not just the rank. Either way, the other four slots filled with look-alikes holding wrong
+numbers, so showing the code next to each cited number matters.
 
 **What I predicted vs. what happened:** I expected hybrid search to rescue 4 or more of the 7 missed answer
 pieces. It rescued 1 and pushed out 5. Merging gives both lists a vote, and a weak list with an equal vote drags
