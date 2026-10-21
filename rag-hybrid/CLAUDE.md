@@ -4,7 +4,7 @@
 `../LEARNING_PLAN.md`. Stage 2's evaluation harness is in `../rag-eval/`, Stage 3's cited runner in
 `../rag-citations/`; read their `CLAUDE.md`, `README.md` and `EXPERIMENTS.md` before building anything.)
 
-## Status (2026-10-12)
+## Status (2026-10-21: complete)
 - Learning loop step 1 (concepts) **done**: keyword search (BM25) vs. meaning-based search, why
   embeddings blur exact terms, merging two ranked lists (reciprocal rank fusion), rerankers (retrieve
   wide, rerank narrow), and what each piece costs in latency and money.
@@ -34,7 +34,9 @@
   and Q07 (confidently wrong, well cited). Decision: **ship meaning-based search alone** on this library.
   Predictions: 2 of 3 right (Q06 refused; ~1s). Bonus: the reranker's top score separated every reranker-caused failure
   (all < 0.35) from every correct answer (all ≥ 0.55); it misses model misreadings (Q09, Q15): a lead for thread C, not yet a finding.
-- **Next:** explain-back + PM note, `README.md` for rag-hybrid, mark Stage 4 built in the root README. Optional:
+- Experiments 2–4 committed (`d99cfd4`, not pushed). `README.md` written 2026-10-21.
+- **Stage 4 complete 2026-10-21:** explain-back done (my 5 answers, with feedback folded in) → `LEARNINGS.md`;
+  root README marks Stage 4 built. Optional extras:
   thread C properly (reranker score as "unsure" signal, with a cut-off fixed before testing on the near-miss set);
   thread D (near-duplicate codes); keyword search only for rare terms.
 - Saboo's tutorial uses RAGLite (needs spaCy + Postgres: no builds here). Rebuilt the same three pieces
